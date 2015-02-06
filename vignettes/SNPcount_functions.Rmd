@@ -1,0 +1,41 @@
+---
+title: "Running Functions for SNP Counts"
+author: "Elena Venable"
+date: "February 5, 2015"
+output: html_document
+---
+
+## 1. Load the Data and Attach Packages
+This requires the packages `GenomicRanges` and `SexSpecificExpression`  and the data containing the genes in the genome and the SNP data.
+
+```{r, include=FALSE}
+library(GenomicRanges)
+library(SexSpecificExpression)
+load("~/SexSpecificExpression/data/allgenes_and_TE2.rda")
+load("~/SexSpecificExpression/data/SNP_list.rda")
+```
+
+```{r, echo=FALSE}
+load("~/SexSpecificExpression/data/compiled_SNP_data2.rda")
+```
+
+## 2. Prepare Data
+The function for compiling all the SNP and genome data requires that the genome data and SNP data be in a list format where item $i$ of the list contains the data of chromosome $i$.  Any redundancies in the gtf file should be removed beforehand.  The code below prepares the data from an uploaded gtf file and SNP data: 
+
+```{r}
+allgenes_list <- split(x = allgenes_no_reps2, f = allgenes_no_reps2$Header)
+```
+
+## 3. Run Function to Count SNPs in Each Gene Region, Up and Downstream and Introns
+Run the function `categorize_SNPs` on the two lists.  Note the extra two variables `chr_num` and `bpairs`.  The `chr_num` is the number of chromosomes being evaluated, and `bpairs` is the number of basepairs used to calculate up and downstream areas.
+
+```{r, eval=FALSE}
+compiled_SNP_data <- categorize_SNPs(gene_list = allgenes_list, snp_list = SNP_list, chr_num = 5, bpairs = 1000)
+```
+
+## 4. Combine Data From All Chromosomes
+Run the output list through `all_chromomsomes` to compile all the data as well as calculate the total number of SNPs in the exons, introns, and down and upstreams.
+
+```{r}
+SNPs_and_genes <- all_chromosomes(compiled_SNP_data = compiled_SNP_data2)
+```

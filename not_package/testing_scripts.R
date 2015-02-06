@@ -56,14 +56,14 @@ for(i in which(test2$Region == "3UTR")){
 }  
 up_down <- cbind(up_down1,direction)
 
-#Run on non down stream
+#### Run on non down stream ####
 chr_SNP <- split(x = SNP_list, f = SNP_list$Chromosome)
 SNP1 <- chr_SNP[[1]]
 gr0 <- with(new_chr1, IRanges(start=Start, end=Stop))
 gr1 <- with(SNP1, IRanges(start=Start, end=Stop))
 hits = findOverlaps(gr0, gr1) # queryHits are genes and subjectHits are SNPs
 
-# get count for each gene
+ get count for each gene
 SNP_tab <- as.numeric(table(queryHits(hits)))
 snp_count <- rep(0,nrow(new_chr1))
 snp_count[as.numeric(row.names(table(queryHits(hits))))] = SNP_tab
@@ -102,7 +102,7 @@ SNP_with_data <- cbind(SNP1,SNP_gene_match,SNP_distance_from_start,SNP_distance_
 # Take out hits
 SNP_no_CDS <- SNP1[which(SNP_with_data$SNP_gene_match=="0"),]
 
-# Run on down stream
+#### Run on down stream ####
 gr2 <- with(up_down, IRanges(start=Start, end=Stop))
 gr3 <- with(SNP_no_CDS, IRanges(start=Start, end=Stop))
 hits_down = findOverlaps(gr2, gr3)
@@ -122,8 +122,15 @@ SNP_distance <- plus_down*(up_down$Stop[queryHits(hits_down)] - SNP_no_CDS$Start
 
 stream_with_data <- cbind(SNP_no_CDS[subjectHits(hits_down),],queryHits(hits_down),SNP_distance)
 
-
-
-
 # Take out hits
 SNP_introns <- SNP_no_CDS[-subjectHits(hits_down),]
+
+#### SNP content in expressed versus not expressed ####
+subset_genes <- gene_IDs[1:100]
+SNPs_and_genes <- all_chromosomes(compiled_SNP_data = compiled_SNP_data2)
+genes_with_SNP_count <- SNPs_and_genes$genome_with_SNP
+gene_names_temp <- gsub("^.*A","A",as.character(genes_with_SNP_count$GeneID))
+genes_with_SNP_count$GeneID <- gsub("\\..*","",gene_names_temp)
+ID_and_count_temp <- data.frame(GeneID = genes_with_SNP_count$GeneID, snp_rate = (genes_with_SNP_count$snp_count)/abs(genes_with_SNP_count$Start - genes_with_SNP_count$Stop))
+ID_and_count <- aggregate(. ~ GeneID, data = ID_and_count_temp, FUN = sum)
+index_genes <- which(ID_and_count$GeneID %in% subset_genes)

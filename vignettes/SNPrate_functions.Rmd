@@ -1,0 +1,40 @@
+---
+title: "Random Generation of Gene IDs and SNP Rate Calculation"
+author: "Elena Venable"
+date: "February 5, 2015"
+output: html_document
+---
+
+## 1. Load the Necessary Data
+Load a file containing all the gene_IDs and load `SexSpecificExpression`.
+
+```{r}
+library(SexSpecificExpression)
+load("~/SexSpecificExpression/data/gene_IDs.rda")
+load("~/SexSpecificExpression/data/compiled_SNP_data.rda")
+```
+
+This also requires the compiled genome data, which is explained in the vignette "SNPcount_functions."  The genome list is extracted from the output of the `all_chromosome` function.
+
+```{r}
+SNPs_and_genes <- all_chromosomes(compiled_SNP_data = compiled_SNP_data)
+genome <- SNPs_and_genes$genome_with_SNP
+```
+
+## 2. Generate a Random List of Genes
+Use the code below to generate a list of random genes for which calculate the SNP rate. The variable `n` is the number of samples in the random generation.
+
+```{r}
+n = 50000
+gene_index <- sample(1:length(gene_IDs), n, replace=FALSE )
+gene_names <- gene_IDs[gene_index]
+```
+
+## 3. Find the SNP Rate of the Random Gene List
+Use the function `calculate_snp_rate` to find the SNP rate per base pair in the random gene generation.  A vector contain gene names (i.e the names of expressed genes) can also be input instead of a random list.
+
+```{r}
+snp_rate <- calculate_snp_rate(GeneIDs = gene_names,genome = genome)
+snp_rate
+```
+

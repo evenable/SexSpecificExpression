@@ -1,3 +1,4 @@
 export(do_one_chromosome)
 export(categorize_SNPs)
 export(all_chromosomes)
+export(calculate_snp_rate)
