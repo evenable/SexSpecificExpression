@@ -24,6 +24,7 @@ The function for compiling all the SNP and genome data requires that the genome 
 
 ```{r}
 allgenes_list <- split(x = allgenes_no_reps2, f = allgenes_no_reps2$Header)
+SNPs <- split(x=SNP_list, f = SNP_list$Chromosome)
 ```
 
 ## 3. Run Function to Count SNPs in Each Gene Region, Up and Downstream and Introns
