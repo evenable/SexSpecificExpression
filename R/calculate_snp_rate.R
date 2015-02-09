@@ -13,12 +13,8 @@
 #'  \item{chr_withSNP}{}
 #'}
 #' @export
-calculate_snp_rate <- function(GeneIDs, genome){
-  gene_names_temp <- gsub("^.*A","A",as.character(genome$GeneID))
-  genome$GeneID <- gsub("\\..*","",gene_names_temp)
-  ID_and_count_temp <- data.frame(GeneID = genome$GeneID, snp_count = (genome$snp_count), gene_length = abs(genome$Start - genome$Stop))
-  ID_and_count <- aggregate(. ~ GeneID, data = ID_and_count_temp, FUN = sum)
-  index_genes <- which(ID_and_count$GeneID %in% GeneIDs)
-  snp_rate <- sum(ID_and_count$snp_count[index_genes])/sum(ID_and_count$gene_length)
+calculate_snp_rate <- function(GeneIDs, prepared_genome){
+  index_genes <- which(prepared_genome$GeneID %in% GeneIDs)
+  snp_rate <- sum(prepared_genome$snp_count[index_genes])/sum(prepared_genome$gene_length[index_genes])
   snp_rate
 }

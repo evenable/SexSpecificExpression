@@ -1,6 +1,6 @@
 library(GenomicRanges)
 # Separating into lists
-allgenes_list <- split(x = allgenes_no_reps2, f = allgenes_no_reps2$Header)
+allgenes_list <- split(x = allgenes_and_TE3, f = allgenes_and_TE3$Header)
 chr1 <- allgenes_list[[1]]
 
 #### Getting Rid of repeat UTRs ####
@@ -134,3 +134,12 @@ genes_with_SNP_count$GeneID <- gsub("\\..*","",gene_names_temp)
 ID_and_count_temp <- data.frame(GeneID = genes_with_SNP_count$GeneID, snp_rate = (genes_with_SNP_count$snp_count)/abs(genes_with_SNP_count$Start - genes_with_SNP_count$Stop))
 ID_and_count <- aggregate(. ~ GeneID, data = ID_and_count_temp, FUN = sum)
 index_genes <- which(ID_and_count$GeneID %in% subset_genes)
+
+#### Background Rate function - making lists and removing NAs ####
+list_of_geneID <- list()
+for(i in 1:ncol(genelists_FirstSet)){
+  list_of_geneID[[i]] <- list()
+  remove_indices <- which(genelists_FirstSet[,i] == "")
+  list_of_geneID[[i]]$name <- colnames(genelists_FirstSet)[i]
+  list_of_geneID[[i]]$genes <- genelists_FirstSet[-(remove_indices),i]
+}
