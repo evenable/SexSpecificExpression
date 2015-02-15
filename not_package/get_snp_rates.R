@@ -1,0 +1,6 @@
+library(SexSpecificExpression)
+load("~/SexSpecificExpression/data/compiled_data.rda")
+load("~/SexSpecificExpression/data/genelist_FirstSet.rda")
+load("~/SexSpecificExpression/data/gene_IDs.rda")
+all_info <- all_chromosomes(compiled_SNP_data = compiled_data)
+comparisons <- compare_background_rate(gene_list =  genelists_FirstSet,all_IDs = gene_IDs,genome =all_info$genome_with_SNP,rep_num = 100)
