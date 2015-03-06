@@ -3,3 +3,6 @@
 *.log
 *.tex
 *.gz
+total_table.log
+total_table.pdf
+total_table.synctex.gz
