@@ -1,6 +1,7 @@
-#' Title
+#' Annotate Genome with SNPs for a Single Chromosome
 #' 
-#' Description
+#' This function annotates the genome of one chromosome with SNP count and produces data frames containing SNPs in exons, introns
+#' and intergenic regions of the chromosome.
 #' @param chr_gene A data frame containing the genome of the species for one chromosome.
 #' Each row of data frame represents a specific section of the genome.  The data 
 #' should at least contain the listed columns:
@@ -11,7 +12,7 @@
 #'  \item{GeneID}{The name of the gene to which the region belongs}
 #'  \item{direction}{A "+" or "-" indicating the strand on which the gene segment is located}
 #' }
-#' @param chr_SNP A data frame containin the the start and stop of each SNP in the specific 
+#' @param chr_SNP A data frame containing the start and stop of each SNP in the specific 
 #' chromosome of the genome. The start codon should be labled "Start," and the stop codon should be labeled "Stop."
 #' 
 #' @return A list with five components:
@@ -132,7 +133,7 @@ do_one_chromosome <- function(chr_gene, chr_SNP){
   #minus_up <- up_down$Region[queryHits(stream_hits)] == "up" & up_down$direction[queryHits(stream_hits)] == "-"
   #SNP_distance <- plus_down*(up_down$Stop[queryHits(stream_hits)] - SNP_no_CDS$Start[subjectHits(stream_hits)])+ minus_down*(up_down$Start[queryHits(stream_hits)] - SNP_no_CDS$Start[subjectHits(stream_hits)]) +plus_up*(up_down$Stop[queryHits(stream_hits)] - SNP_no_CDS$Start[subjectHits(stream_hits)]) + minus_up*(up_down$Start[queryHits(stream_hits)] - SNP_no_CDS$Start[subjectHits(stream_hits)])
   
-  SNP_stream <- cbind(SNP_no_CDS[subjectHits(stream_hits),],queryHits(stream_hits)) # final table with SNP info in up and down stream
+  SNP_stream <- cbind(SNP_no_CDS[subjectHits(stream_hits),]) # final table with SNP info in up and down stream
 
   # table with introns
   SNP_introns <- SNP_no_CDS[-subjectHits(stream_hits),]

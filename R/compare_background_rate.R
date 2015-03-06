@@ -1,16 +1,20 @@
-#' Title
+#' Compare SNP Rates in Gene Lists to Background Rates
 #' 
-#' Description
-#' @param GeneIDs some stuff
-#' @param genome
+#' This function both calculates that SNP rate per nucleotide in specific gene lists and 
+#' simulates background rates for comparision to each gene list.  The background rates are simulated
+#' using random lists of the same size as the gene lists and are simulated using three sets of
+#' genes: all genes, only TEs, and all genes but TEs.
+#' @param gene_list A data frame containing the a list of genes to be tested in each column.
+#' @param all_IDs A list of all genes in the genome.
+#' @param genome The genome of the species with the snp count of each gene region.
+#' @param rep_num The number of simulations replications used to estimate the background rateß.
 #' 
-#' @return list
+#' @return A list with two elements:
 #' \describe{
-#'  \item{SNP_introns}{stuff }
-#'  \item{SNP_exons}{}
-#'  \item{SNP_stream}{}
-#'  \item{stream_withSNP}{}
-#'  \item{chr_withSNP}{}
+#'  \item{all_trails}{A data frame containing all of the simulated background rates for each gene list.}
+#'  \item{rates}{A table containing the true rates and simulated rates for each gene list.  There are 
+#'  three simulated rates: rates including all genes, rates including only TEs, and rates containing
+#'  only genes without TEs.}
 #'}
 #' @export
 compare_background_rate <- function(gene_list, all_IDs, genome, rep_num){
