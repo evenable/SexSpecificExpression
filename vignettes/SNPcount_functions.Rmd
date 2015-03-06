@@ -11,7 +11,7 @@ This requires the packages `GenomicRanges` and `SexSpecificExpression`  and the 
 ```{r, include=FALSE}
 library(GenomicRanges)
 library(SexSpecificExpression)
-load("~/SexSpecificExpression/data/allgenes_and_TE2.rda")
+load("~/SexSpecificExpression/data/allgenes_final.rda")
 load("~/SexSpecificExpression/data/SNP_list.rda")
 ```
 
@@ -23,7 +23,7 @@ load("~/SexSpecificExpression/data/compiled_SNP_data2.rda")
 The function for compiling all the SNP and genome data requires that the genome data and SNP data be in a list format where item $i$ of the list contains the data of chromosome $i$.  Any redundancies in the gtf file should be removed beforehand.  The code below prepares the data from an uploaded gtf file and SNP data: 
 
 ```{r}
-allgenes_list <- split(x = allgenes_no_reps2, f = allgenes_no_reps2$Header)
+allgenes_list <- split(x = allgenes_final, f = allgenes_final$Header)
 SNPs <- split(x=SNP_list, f = SNP_list$Chromosome)
 ```
 
@@ -31,7 +31,7 @@ SNPs <- split(x=SNP_list, f = SNP_list$Chromosome)
 Run the function `categorize_SNPs` on the two lists.  Note the extra two variables `chr_num` and `bpairs`.  The `chr_num` is the number of chromosomes being evaluated, and `bpairs` is the number of basepairs used to calculate up and downstream areas.
 
 ```{r, eval=FALSE}
-compiled_SNP_data <- categorize_SNPs(gene_list = allgenes_list, snp_list = SNP_list, chr_num = 5, bpairs = 1000)
+compiled_SNP_data <- categorize_SNPs(gene_list = allgenes_list, snp_list = SNPs, chr_num = 5, bpairs = 1000)
 ```
 
 ## 4. Combine Data From All Chromosomes
