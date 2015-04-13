@@ -19,8 +19,8 @@
 #' @export
 compare_background_rate <- function(gene_list, all_IDs, genome, rep_num){
   #### Prepare Genome ####
-  prepared_genome <- prepare_genome(genome)
-  
+  prepared_genome <- prepare_genome(genome = genome)
+ 
   #### Function for Generating and Running Random Sample ####
   simulate_background_rate <- function(N, all_IDs, prepared_genome){
   TEs <- grep(pattern = "TE", prepared_genome$GeneID)

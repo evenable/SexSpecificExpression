@@ -1,17 +1,11 @@
-#' Title
+#' Prepare Genome for the Functions
 #' 
 #' Description
-#' @param GeneIDs some stuff
 #' @param genome
 #' 
-#' @return list
-#' \describe{
-#'  \item{SNP_introns}{stuff }
-#'  \item{SNP_exons}{}
-#'  \item{SNP_stream}{}
-#'  \item{stream_withSNP}{}
-#'  \item{chr_withSNP}{}
-#'}
+#' @return The edited genome with with the GeneID column containing only
+#' the names of the gene with no extra characters.
+#'
 #' @export
 prepare_genome <- function(genome){
 gene_names_temp <- gsub("^.*A","A",as.character(genome$GeneID))

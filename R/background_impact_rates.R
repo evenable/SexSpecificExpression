@@ -15,8 +15,8 @@
 #' @export
 background_impact_rate <- function(all_data, impact_list,chr_num){
   prepared_genome <- prepare_genome(genome = all_data$genome_with_SNP)
-  TU_index <- which(all_data$exons$SNP_Region == 1)
-  FU_index <- which(all_data$exons$SNP_Region == 2)
+  TU_index <- which(all_data$exons$SNP_Region == "3UTR")
+  FU_index <- which(all_data$exons$SNP_Region == "5UTR")
   exon_table <- all_data$exons[-c(TU_index,FU_index),]
   impact <- split(x = impact_list,f=impact_list$X.CHROM)
   exons <- split(x = exon_table, f = exon_table$Chromosome)

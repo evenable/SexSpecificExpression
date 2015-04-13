@@ -29,8 +29,8 @@
 #' @export
 categorize_SNPs <- function(allgenes, SNPs, chr_num){
   
-  gene_list <- split(x = allgenes, f = allgenes_final$Header)
-  snp_list <- split(x=SNPs, f = SNP_list$Chromosome)
+  gene_list <- split(x = allgenes, f = allgenes$Header)
+  snp_list <- split(x=SNPs, f = SNPs$Chromosome)
   
   types <- list()
   for(i in 1:chr_num){
