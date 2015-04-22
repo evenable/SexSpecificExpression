@@ -1,11 +1,47 @@
 library(SexSpecificExpression)
-load("~/SexSpecificExpression/data/compiled_data.rda")
-load("~/SexSpecificExpression/data/genelist_FirstSet.rda")
-load("~/SexSpecificExpression/data/gene_IDs.rda")
-all_info <- all_chromosomes(compiled_SNP_data = compiled_data)
-comparisons <- compare_background_rate(gene_list =  genelists_FirstSet,all_IDs = gene_IDs,genome =all_info$genome_with_SNP,rep_num = 100)
+load("~/SexSpecificExpression/R/sysdata/snp_rate_table.rda")
+load("~/SexSpecificExpression/data/gene_lists_three_sets.rda")
+load("~/SexSpecificExpression/data/all_compiled_data.rda")
 
-data_list <- split(x=comparison_data, f=comparison_data$name)
+gene_list <- gene_lists_three_sets
+data_list <- split(x=snp_rate$all_trials, f=snp_rate$all_trials$name)
+rate_table <- snp_rate_table
+prepared_genome <- prepare_genome(genome = all_compiled_data$genome_with_SNP)
+
+list_of_geneID <- list()
+for(i in 1:ncol(gene_list)){
+  list_of_geneID[[i]] <- list()
+  remove_indices <- which(gene_list[,i] == "")
+  list_of_geneID[[i]]$name <- colnames(gene_list)[i]
+  if(length(remove_indices) == 0){
+    list_of_geneID[[i]]$genes <- gene_list[,i]
+  }
+  else{
+    list_of_geneID[[i]]$genes <- gene_list[-(remove_indices),i]
+  }
+}
+
+length_tmp <- lapply(list_of_geneID, function(z) {sum(prepared_genome$gene_length[(prepared_genome$GeneID %in% z$genes)])})
+gene_length <- data.frame(name = colnames(gene_lists_three_sets), length = unlist(length_tmp))
+#### Poisson #### 
+p_values <- matrix(0,nrow=nrow(rate_table),ncol=(ncol(rate_table)-2))
+rownames(p_values) <- rep("",nrow(rate_table))
+for(i in 1:nrow(rate_table)){
+  rownames(p_values)[i] <- as.character(rate_table$name[i])
+  true_rate <- rate_table$true_rates[i]
+  true_count <- round(true_rate*gene_length$length[i])
+  length <- gene_length$length[i]
+  for(j in 1:(ncol(rate_table)-2)){
+    expected_rate <- rate_table[i,j+1]
+    if( true_rate > rate_table[i,j+1]){
+      p_values[i,j] = poisson.test(x = true_count, T = length,r = expected_rate, alternative = "greater")$p.value
+    }
+    else{
+      p_values[i,j] = poisson.test(x = true_count, T = length,r = expected_rate, alternative = "less")$p.value
+    }
+  }
+}
+colnames(p_values) <- colnames(rate_table)[2:(ncol(rate_table)-1)]
 
 #### Test Normality ####
 p_values <- matrix(0,nrow=length(data_list),ncol=(ncol(data_list[[1]])-1))

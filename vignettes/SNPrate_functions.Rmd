@@ -6,35 +6,30 @@ output: html_document
 ---
 
 ## 1. Load the Necessary Data
-Load a file containing all the gene_IDs and load `SexSpecificExpression`.
+The output of the `categorize_SNP` function is all_compiled_data, which can be used to calculate SNP rates.  Also load a file containing all the gene_IDs and the gene_lists for which a snp rate is needed.
 
 ```{r}
 library(SexSpecificExpression)
 load("~/SexSpecificExpression/data/gene_IDs.rda")
-load("~/SexSpecificExpression/data/compiled_SNP_data.rda")
+load("~/SexSpecificExpression/data/all_compiled_data.rda")
+load("~/SexSpecificExpression/data/gene_lists_three_sets.rda")
 ```
 
-This also requires the compiled genome data, which is explained in the vignette "SNPcount_functions."  The genome list is extracted from the output of the `all_chromosome` function.
+```{r,include=FALSE}
+load("~/SexSpecificExpression/data/snp_rate.rda")
+```
+Calculating SNP rates requires the compiled genome data, which is a subset of the `all_compiled_data` list. Below, the genome is extracted from the data.
 
 ```{r}
-SNPs_and_genes <- all_chromosomes(compiled_SNP_data = compiled_SNP_data)
-genome <- SNPs_and_genes$genome_with_SNP
+genome <- all_compiled_data$genome_with_SNP
 ```
 
-## 2. Generate a Random List of Genes
-Use the code below to generate a list of random genes for which calculate the SNP rate. The variable `n` is the number of samples in the random generation.
+## 2. Run the Background Rate Simulation and Calculation Function
+Use the code below to run the code that simulates the background rate and calculates the rate of SNPs in different gene lists. The variable `rep_num` is the amount of simulations that will be used to estimate the background rate.  The output of the function has all the trials of the simulation and a table containing the true and simulated rates.  The table output is shown below
 
+```{r,eval=FALSE}
+snp_rate <- compare_background_rate(gene_list = gene_lists_three_sets,all_IDs = gene_IDs,genome = genome,rep_num = 100)
+```
 ```{r}
-n = 50000
-gene_index <- sample(1:length(gene_IDs), n, replace=FALSE )
-gene_names <- gene_IDs[gene_index]
+snp_rate$rates
 ```
-
-## 3. Find the SNP Rate of the Random Gene List
-Use the function `calculate_snp_rate` to find the SNP rate per base pair in the random gene generation.  A vector contain gene names (i.e the names of expressed genes) can also be input instead of a random list.
-
-```{r}
-snp_rate <- calculate_snp_rate(GeneIDs = gene_names,genome = genome)
-snp_rate
-```
-

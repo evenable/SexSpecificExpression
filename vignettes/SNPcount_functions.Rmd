@@ -1,42 +1,71 @@
 ---
 title: "Running Functions for SNP Counts"
 author: "Elena Venable"
-date: "February 5, 2015"
+date: "March 12, 2015"
 output: html_document
 ---
 
 ## 1. Load the Data and Attach Packages
-This requires the packages `GenomicRanges` and `SexSpecificExpression`  and the data containing the genes in the genome and the SNP data.
-
-```{r, include=FALSE}
-library(GenomicRanges)
-library(SexSpecificExpression)
-load("~/SexSpecificExpression/data/allgenes_final.rda")
-load("~/SexSpecificExpression/data/SNP_list.rda")
-```
-
-```{r, echo=FALSE}
-load("~/SexSpecificExpression/data/compiled_SNP_data2.rda")
-```
-
-## 2. Prepare Data
-The function for compiling all the SNP and genome data requires that the genome data and SNP data be in a list format where item $i$ of the list contains the data of chromosome $i$.  Any redundancies in the gtf file should be removed beforehand.  The code below prepares the data from an uploaded gtf file and SNP data: 
-
-```{r}
-allgenes_list <- split(x = allgenes_final, f = allgenes_final$Header)
-SNPs <- split(x=SNP_list, f = SNP_list$Chromosome)
-```
-
-## 3. Run Function to Count SNPs in Each Gene Region, Up and Downstream and Introns
-Run the function `categorize_SNPs` on the two lists.  Note the extra two variables `chr_num` and `bpairs`.  The `chr_num` is the number of chromosomes being evaluated, and `bpairs` is the number of basepairs used to calculate up and downstream areas.
+This requires the packages `GenomicRanges` and `SexSpecificExpression`  and the data containing the genes in the genome, the SNP data, the list of all gene IDs, the list of genes for calculating rates, and the list of missense mutations.
 
 ```{r, eval=FALSE}
-compiled_SNP_data <- categorize_SNPs(gene_list = allgenes_list, snp_list = SNPs, chr_num = 5, bpairs = 1000)
+library(GenomicRanges)
+library(SexSpecificExpression)
+load("~/SexSpecificExpression/data/allgenes_final.rda") # TAIR10 file
+load("~/SexSpecificExpression/data/SNP_list.rda") # SNP list
+load("~/SexSpecificExpression/data/gene_IDs.rda") # List of gene IDs
+load("~/SexSpecificExpression/data/gene_lists_three_sets.rda") # List of gene sets for rate calculation
+load("~/SexSpecificExpression/R/sysdata/Cvi_impact.rda") # List of missense mutations
 ```
 
-## 4. Combine Data From All Chromosomes
-Run the output list through `all_chromomsomes` to compile all the data as well as calculate the total number of SNPs in the exons, introns, and down and upstreams.
+```{r,include=FALSE}
+load("~/SexSpecificExpression/R/sysdata/snp_rate.rda")
+library(GenomicRanges)
+library(SexSpecificExpression)
+load("~/SexSpecificExpression/data/allgenes_final.rda") # TAIR10 file
+load("~/SexSpecificExpression/data/SNP_list.rda") # SNP list
+load("~/SexSpecificExpression/data/gene_IDs.rda") # List of gene IDs
+load("~/SexSpecificExpression/data/gene_lists_three_sets.rda") # List of gene sets for rate calculation
+load("~/SexSpecificExpression/R/sysdata/Cvi_impact.rda") # List of missense mutations
+load("~/SexSpecificExpression/data/all_compiled_data.rda")
+```
+
+## 2. Run Function to Count SNPs in Each Gene Region, Intergenic Region, and Introns
+Run the function `categorize_SNPs` on the two loaded data frames.  Note the extra variable `chr_num`.  `chr_num` is the number of chromosomes being evaluated, which would exclude the non-numbered chromosomes.
+
+```{r,eval=FALSE}
+all_compiled_data <- categorize_SNPs(allgenes = allgenes_final,SNPs = SNP_list,chr_num = 5)
+```
 
 ```{r}
-SNPs_and_genes <- all_chromosomes(compiled_SNP_data = compiled_SNP_data2)
+names(all_compiled_data)
+```
+
+## 3 Run the Background Rate Simulation and Calculation Function
+Calculating SNP rates requires the compiled genome data, which is a subset of the `all_compiled_data` list. Below, the genome is extracted from the data.
+
+```{r}
+genome <- all_compiled_data$genome_with_SNP
+```
+
+Use the code below to simulate the background rate and calculates the rate of SNPs in different gene lists. The variable `rep_num` is the amount of simulations that will be used to estimate the background rate.  The output of the function has all the trials of the simulation and a table containing the true and simulated rates.  The table output is shown below
+
+```{r,eval=FALSE}
+snp_rate <- compare_background_rate(gene_list = gene_lists_three_sets,all_IDs = gene_IDs,genome = genome,rep_num = 100)
+```
+
+```{r}
+names(snp_rate)
+snp_rate$rates
+```
+
+## 4. Calcuate the Missense Mutation Rate
+
+Use the code below to calculate the rate of missense mutations in specific sets of genes.
+
+```{r}
+Cvi_data <- impact_list_rates(all_data = all_compiled_data,impact_list = Cvi_impact,gene_list = gene_lists_three_sets,chr_num = 5 )
+names(Cvi_data)
+Cvi_data$background_rate$average_rate
+Cvi_data$rate_table
 ```

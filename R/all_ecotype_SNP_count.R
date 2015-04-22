@@ -13,7 +13,13 @@ all_ecotype_SNP_count <- function(genome_file, gene_ids, gene_directory, ecotype
   for (file in file_list){
     index <- index + 1
     f_name <- load(paste(gene_directory,file,sep=""))
-    f_data <- get(f_name)
+    f_data_tmp <- get(f_name)
+    ind <- which(f_data_tmp$Sub_base == "-")
+    if(length(ind)>0){
+      f_data <- f_data_tmp[-ind,]
+    } else{
+      f_data <- f_data_tmp
+    }
     ecotype_list[[index]] <- list()
     ecotype_list[[index]]$name <- as.character(f_data$type[1])
     ecotype_list[[index]]$snp_list <- split(x=f_data, f = f_data$Chromosome)
